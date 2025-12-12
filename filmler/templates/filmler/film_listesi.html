@@ -1,0 +1,55 @@
+{% extends "filmler/base.html" %}
+
+{% block title %}Film Listesi - Film Tavsiye Sistemi{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">🎥 Tüm Filmler (Ortalama Puana Göre Sıralı)</h2>
+
+{% if not user.is_authenticated %}
+<div class="alert alert-info">
+    Tavsiye alabilmek ve puan verebilmek için lütfen <a href="{% url 'admin:login' %}">giriş yapın</a>.
+</div>
+{% endif %}
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for film in filmler %}
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            {% if film.afis_url %}
+                <img src="{{ film.afis_url }}" class="card-img-top" alt="{{ film.baslik }} Afişi" style="height: 300px; object-fit: cover;">
+            {% else %}
+                <div class="bg-secondary text-white text-center p-3" style="height: 300px; display: flex; align-items: center; justify-content: center;">Afiş Yok</div>
+            {% endif %}
+            
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ film.baslik }} ({{ film.yayin_tarihi|date:"Y" }})</h5>
+                <p class="card-text text-muted small">Yönetmen: {{ film.yonetmen }}</p>
+                
+                <p class="card-text">
+                    {% if film.ortalama_puan %}
+                        <span class="badge bg-success">⭐ {{ film.ortalama_puan|floatformat:1 }} / 10</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Puan Yok</span>
+                    {% endif %}
+                </p>
+                
+                <p class="card-text mb-auto">{{ film.ozet|truncatechars:100 }}</p>
+                
+                <a href="{% url 'filmler:film_detay' pk=film.pk %}" class="btn btn-primary mt-2">Detay ve Puanla</a>
+            </div>
+            <div class="card-footer">
+                <small class="text-body-secondary">
+                    {% for tur in film.turler.all %}
+                        <span class="badge bg-info text-dark me-1">{{ tur.isim }}</span>
+                    {% endfor %}
+                </small>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p class="alert alert-warning">Henüz sisteme film eklenmemiş. Lütfen Admin Paneli üzerinden film ekleyin.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

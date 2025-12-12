@@ -1,0 +1,55 @@
+{% extends "filmler/base.html" %}
+
+{% block title %}{{ film.baslik }} Detay Sayfası{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        {% if film.afis_url %}
+            <img src="{{ film.afis_url }}" class="img-fluid rounded shadow" alt="{{ film.baslik }}">
+        {% else %}
+            <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded" style="height: 400px;">
+                <h3>Afiş Yok</h3>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-8">
+        <h1 class="mb-3">{{ film.baslik }} <span class="text-muted">({{ film.yayin_tarihi|date:"Y" }})</span></h1>
+        <p class="lead"><strong>Yönetmen:</strong> {{ film.yonetmen }}</p>
+        
+        <div class="mb-3">
+            {% for tur in film.turler.all %}
+                <span class="badge bg-info text-dark">{{ tur.isim }}</span>
+            {% endfor %}
+        </div>
+
+        <div class="alert alert-light border">
+            <h4>Özet</h4>
+            <p>{{ film.ozet }}</p>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Bu Filmi Puanla</h5>
+                {% if user.is_authenticated %}
+                    <p>Ortalama Puan: <strong>{{ ortalama_puan|floatformat:1|default:"Yok" }}</strong> / 10</p>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="input-group mb-3" style="max-width: 300px;">
+                            <span class="input-group-text">Puanın (1-10):</span>
+                            {{ form.puan }}
+                            <button class="btn btn-primary" type="submit">Gönder</button>
+                        </div>
+                    </form>
+                {% else %}
+                    <p class="text-danger">Puan vermek için <a href="{% url 'admin:login' %}">giriş yapmalısınız</a>.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <a href="{% url 'filmler:film_listesi' %}" class="btn btn-outline-secondary mt-3">← Listeye Dön</a>
+    </div>
+</div>
+{% endblock %}

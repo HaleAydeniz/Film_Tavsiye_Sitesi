@@ -1,0 +1,40 @@
+{% extends "filmler/base.html" %}
+{% load static %}
+
+{% block title %}Size Özel Film Tavsiyeleri{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">🌟 Size Özel Tavsiyeler</h1>
+    <p class="lead">Puanladığınız filmlere göre sizin için seçilen en iyi filmler:</p>
+
+    {% if tavsiyeler %}
+        <div class="row row-cols-1 row-cols-md-4 g-4">
+            {% for film in tavsiyeler %}
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    {% if film.afis_url %}
+                        <img src="{{ film.afis_url }}" class="card-img-top" alt="{{ film.baslik }} Afişi" style="height: 300px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-light text-center p-5" style="height: 300px;">Afiş Yok</div>
+                    {% endif %}
+                    
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ film.baslik }}</h5>
+                        <p class="card-text text-muted mb-auto">{{ film.yayin_tarihi|date:"Y" }} - {{ film.yonetmen }}</p>
+                        
+                        <a href="{% url 'filmler:film_detay' pk=film.pk %}" class="btn btn-primary mt-3">Detay ve Puanla</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-warning" role="alert">
+            Şu anda size özel tavsiye oluşturulamıyor. Lütfen daha fazla film puanlayarak tavsiye algoritmamıza yardımcı olun.
+        </div>
+    {% endif %}
+
+    <a href="{% url 'filmler:film_listesi' %}" class="btn btn-secondary mt-5">Ana Sayfaya Dön</a>
+</div>
+{% endblock %}
